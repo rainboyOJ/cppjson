@@ -4,7 +4,6 @@ using namespace std;
 
 #define  log(one) cout << #one << " : " << one << endl;
 
-
 struct node {
     int a,b;
 };
