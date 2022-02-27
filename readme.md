@@ -13,3 +13,11 @@ src
 ├── exception.hpp       一些异常
 └── utils.hpp           常用工具函数
 ```
+
+## 编译与测试
+
+```sh
+mkdir build && cd build
+cmake ..
+make
+```
