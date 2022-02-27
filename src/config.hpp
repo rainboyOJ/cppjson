@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "configPair.hpp"
 
 namespace cppjson {
@@ -54,5 +55,25 @@ void config::update(const std::initializer_list<configPair>&pairs){
     }
 }
 
+
+//序列化
+std::string config::serialized_to_string(bool first_nested_layer)const //序列化的
+{
+    std::ostringstream oss;
+    char end=first_nested_layer?'\n':' ';
+    oss<<"{"<<end;
+    for( auto it=key_value.begin(),next=++key_value.begin();
+            it!=key_value.end();
+            ++it,next!=key_value.end()?++next:next
+        )
+    {
+        if(it!=key_value.end()&&next==key_value.end()) //最后一个元素，没有逗号
+            oss<<"\""<<(*it).first<<"\":"<<(*it).second<<end;
+        else
+            oss<<"\""<<(*it).first<<"\":"<<(*it).second<<","<<end;
+    }
+    oss<<"}"<<end;
+    return oss.str();
+}
 } // end namespace cppjson
 

@@ -28,7 +28,7 @@ int main(){
         std::cout << e.first << " " << e.second << std::endl;
     }
 
-    
+    std::cout << myconfig.serialized_to_string() << std::endl;
     
     return 0;
 }
