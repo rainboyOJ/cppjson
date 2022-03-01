@@ -48,6 +48,8 @@ void config::update(const std::initializer_list<configPair>&pairs){
     for( auto & it : pairs){
         key_value[it.key] = it.value;
         if( field_info != nullptr){
+            std::cout << it.key << std::endl;
+            std::cout << it.value << std::endl;
             field_info->emplace(it.key,
                     std::make_pair(it.type, it.address-this->class_object_pointer)
                     );

@@ -43,13 +43,7 @@ public: //数据
 
 template<typename Object>
 std::string configPair::value_to_string(const Object&field){
-    std::ostringstream oss;
-    if constexpr ( std::is_fundamental_v<Object> && (! std::is_same_v<Object, char *>) )
-    {
-        oss << field;
-        return oss.str();
-    }
-    return "";
+    return To_String<Object>::to(field);
 }
 
 

@@ -23,6 +23,7 @@
 
 namespace cppjson {
 
+using ClassName  = std::string;
 struct Reflectable
 {
     public:
@@ -38,7 +39,9 @@ struct Reflectable
         template<typename T>
         inline static config get_config(const T*object) {
             std::string class_name = GET_TYPE_NAME(T);
+            std::cout << "class_name " << class_name << std::endl;
             config conf(&field[class_name],object); // 产生了这个map
+            std::cout << "class_name " << class_name << std::endl;
             conf.update({{"class_name",class_name}}); //把类更新到map 里
             return conf;
         }
@@ -113,12 +116,15 @@ struct Reflectable
             }
         }
 
-        using ClassName  = std::string;
     private:
         static std::unordered_map<ClassName,Field> field; //类名对应的 Filed
         static std::unordered_map<ClassName,std::function<void*(void)>> default_constructors; //构造函数
         static std::unordered_map<ClassName,std::function<void(void*)>> default_deconstructors;
 };
+
+std::unordered_map<ClassName,Field> Reflectable::field; //类名对应的 Filed
+std::unordered_map<ClassName,std::function<void*(void)>> Reflectable::default_constructors; //构造函数
+std::unordered_map<ClassName,std::function<void(void*)>> Reflectable::default_deconstructors;
 
 //std::vector<std::string_view> Reflectable::get_serializable_types(){ //得到一个存所有可以序列化的类型的名字的列表
     ////std::vector<std::string_view> types;
