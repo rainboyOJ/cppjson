@@ -11,7 +11,6 @@
 #include "utils.hpp"
 #include "exception.hpp"
 
-#define GET_TYPE_NAME(type) abi::__cxa_demangle(typeid(type).name(),0,0,0)
 
 namespace cppjson {
 
