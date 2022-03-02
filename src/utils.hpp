@@ -28,15 +28,12 @@ struct has_config_member_function {
     static constexpr bool value = decltype(check<T>(0))::value;
 };
 
-template<typename Object>
-struct IsTupleOrPair //可以被 get<0>
-{
-    template<typename T>
-    static constexpr auto check(int)->decltype(std::get<0>(std::declval<T>()),std::true_type());
-    template<typename T>
-    static constexpr auto check(...)->std::false_type;
-    static constexpr int value=std::is_same<decltype(check<Object>(0)),std::true_type>::value;
-};
+//使用偏特化
+template <typename> struct is_tuple: std::false_type {};
+template <typename ...T> struct is_tuple<std::tuple<T...>>: std::true_type {};
+
+template <typename> struct is_pair: std::false_type {};
+template <typename T,typename U> struct is_pair<std::pair<T,U>> : std::true_type {};
 
 /// ====================== 函数
 
@@ -109,7 +106,7 @@ struct To_String <T,
 
 template<typename T>
 struct To_String <T,
-    std::enable_if_t< IsTupleOrPair<T>::value >
+    std::enable_if_t< is_tuple<T>::value >
 > {
     static std::string to(const T & object) {
         std::ostringstream oss;
@@ -122,6 +119,21 @@ struct To_String <T,
                     oss << To_String<std::remove_cv_t<decltype(x)>>::to(x);
                     if( !last ) oss << ",";
                 });
+        oss << "]";
+        return oss.str();
+    }
+};
+
+template<typename T>
+struct To_String <T,
+    std::enable_if_t< is_pair<T>::value >
+> {
+    static std::string to(const T & object) {
+        std::ostringstream oss;
+        oss << "[";
+        oss << To_String<std::tuple_element_t<0,T>>::to(object.first);
+        oss << ",";
+        oss << To_String<std::tuple_element_t<1,T>>::to(object.second);
         oss << "]";
         return oss.str();
     }
