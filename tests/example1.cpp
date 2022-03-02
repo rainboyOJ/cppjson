@@ -15,6 +15,8 @@ struct Node
     char *abc;
     //std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
     std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
+    std::pair<int, std::string> Pair = std::make_pair(100, "hello");
+    std::vector<int> vec{1,2,3,4};
     config get_config() const
     {
         config _conf=Reflectable::get_config(this);
@@ -24,13 +26,22 @@ struct Node
             {"z",z},
             {"abc",abc},
             {"tp",tp},
+            {"pair",Pair},
+            {"vec",vec}
         });
         return _conf;
     }
 };
 
-void func(){
-}
+struct Node2 {
+    Node node;
+    config get_config() const{
+        config _conf = Reflectable::get_config(this);
+        _conf.update({{"node",node}});
+        return _conf;
+    }
+};
+
 
 int main()
 {
@@ -42,6 +53,10 @@ int main()
     
     std::string json=Serializable::dumps(object);                 //序列化
     cout<<json<<endl;
+
+    Node2 o2;
+    auto json2 = Serializable::dumps(o2);
+    std::cout << json2 << std::endl;
     //Node b=Serializable::loads<Node>(json);                               //反序列化
     //[>正常访问<]
     //cout<<b.x<<endl;                                                      //正常访问成员变量

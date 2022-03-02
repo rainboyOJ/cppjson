@@ -38,16 +38,10 @@ public: //数据
     std::size_t address; //成员变量的偏移地址
 };
 
-
-
 template<typename Object>
 std::string configPair::value_to_string(const Object&field){
     return To_String<Object>::to(field);
 }
-
-
-
-
 
 
 } // end namespace cppjson

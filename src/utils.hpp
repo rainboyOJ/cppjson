@@ -35,6 +35,9 @@ template <typename ...T> struct is_tuple<std::tuple<T...>>: std::true_type {};
 template <typename> struct is_pair: std::false_type {};
 template <typename T,typename U> struct is_pair<std::pair<T,U>> : std::true_type {};
 
+template <typename> struct is_vector: std::false_type {};
+template <typename T> struct is_vector<std::vector<T>>: std::true_type {};
+
 /// ====================== 函数
 
 //对于每一个元素进行遍历
@@ -138,6 +141,26 @@ struct To_String <T,
         return oss.str();
     }
 };
+
+template<typename T>
+struct To_String <T,
+    std::enable_if_t< is_vector<T>::value >
+> {
+    template<typename U>
+    static std::string to(const std::vector<U> & object) {
+        std::ostringstream oss;
+        oss << "[";
+        std::size_t idx = 0;
+        for (const auto& e : object) {
+            oss << To_String<U>::to(e);
+            if( ++idx != object.size() )
+                oss << ",";
+        }
+        oss << "]";
+        return oss.str();
+    }
+};
+
 
 
 
