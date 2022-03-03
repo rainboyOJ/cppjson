@@ -36,7 +36,14 @@ public: //数据
     std::string value;  //存成员变量转成字符串的结果
     std::string type; //字符串表示的成员变量的类型
     std::size_t address; //成员变量的偏移地址
+
+    // 类型 -> 转换函数
+    static std::unordered_map<std::string,
+        std::function<void(void*,const std::string&)> > string_to_value;
 };
+
+std::unordered_map <std::string,
+        std::function<void(void*,const std::string&)> > configPair::string_to_value;
 
 template<typename Object>
 std::string configPair::value_to_string(const Object&field){

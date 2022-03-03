@@ -45,7 +45,7 @@ struct Node2 {
 
 int main()
 {
-    //Serializable::Regist<Node>();
+    Serializable::Regist<Node>();
     Node object;
     object.abc = "abc";
 
@@ -54,9 +54,20 @@ int main()
     std::string json=Serializable::dumps(object);                 //序列化
     cout<<json<<endl;
 
-    Node2 o2;
-    auto json2 = Serializable::dumps(o2);
-    std::cout << json2 << std::endl;
+    std::cout << "============ Serializable::parse" << std::endl;
+    auto decode_conf = Serializable::parse(json);
+    std::cout << "config iterable" << std::endl;
+    for (const auto& e : decode_conf) {
+        std::cout << e.first << " " << e.second << std::endl;
+    }
+
+
+    //Node2 o2;
+    //auto json2 = Serializable::dumps(o2);
+    //std::cout << json2 << std::endl;
+
+
+
     //Node b=Serializable::loads<Node>(json);                               //反序列化
     //[>正常访问<]
     //cout<<b.x<<endl;                                                      //正常访问成员变量

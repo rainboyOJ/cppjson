@@ -5,7 +5,7 @@ cmake_minimum_required (VERSION 2.8)
 project(cppjson)
 
 # 指定编译flag
-set(CMAKE_CXX_FLAGS "-std=c++17")
+set(CMAKE_CXX_FLAGS "-std=c++17 -g")
 
 # 设置宏
 add_definitions(-D DEBUG)

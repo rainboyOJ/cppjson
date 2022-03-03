@@ -31,8 +31,10 @@ struct Reflectable
 
         template<typename T> //注册
         static void Regist(){
-            static_assert(has_config_member_function<T>(),"There are some objects that use reflection but haven't implement public method Config get_config()const");
+            static_assert(has_config_member_function<T>::value,"There are some objects that use reflection but haven't implement public method Config get_config()const");
             T object;
+            //TODO default_constructors
+            //TODO default_deconstructors
             auto config = object.get_config();  //注册时调用一下get_config
         }
 

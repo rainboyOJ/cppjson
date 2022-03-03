@@ -15,6 +15,22 @@ namespace cppjson {
     
 struct EmptyClass{}; //在Reflectanle::get_method与Reflectable::classmethod_wrapper中有使用，用于类型转换的"中介"
 
+template<typename T,typename... U>
+inline bool Any_Of(T&& t,U... args){
+    return  ( (t==args)||...);
+}
+
+template<typename T,typename... U>
+inline bool None_of(T&& t,U... args){
+    return !Any_Of(std::forward<T>(t),args...);
+}
+
+inline bool isBlankChar(char c){
+    return Any_Of(c,'\t','\n','\r',' ');
+}
+
+
+
 
 template<typename T>
 struct has_config_member_function {
@@ -160,7 +176,6 @@ struct To_String <T,
         return oss.str();
     }
 };
-
 
 
 

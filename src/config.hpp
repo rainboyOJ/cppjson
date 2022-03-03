@@ -12,7 +12,7 @@ using Field=std::unordered_map<std::string,std::pair<std::string,std::size_t>>;
 class config {
 private: //成员
     mutable std::unordered_map<std::string,std::string> key_value;      //存键值对
-    Field * field_info;     //批向 成员信息 的指针(批向外部),
+    Field * field_info;     //指向 成员信息 的指针(批向外部),
     std::size_t class_size; //类大小
     std::size_t class_object_pointer; //类对象的起始地址
 public: //函数
@@ -28,8 +28,9 @@ public: //函数
 
     std::string serialized_to_string(bool first_nested_layer=false)const;      //序列化为字符串  
 
-    std::string&operator[](const std::string&key)const; //键值对 
-    std::string&operator[](std::string&key);  
+    //键值对
+    std::string& operator[](const std::string&key) const { return key_value[key]; }
+    std::string& operator[](std::string&key) { return key_value[key]; }
 
     void update(const std::initializer_list<configPair>&pairs);
     //添加变量对,这时候ConfigPair中会记录下类型信息，可以在运行时创建好反序列化时候需要对应的还原函数;
