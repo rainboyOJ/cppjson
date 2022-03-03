@@ -18,7 +18,7 @@ public:
         configPair::string_to_value[GET_TYPE_NAME(T)] = [](void * object,const std::string & value)->void
         {
             config __conf = Serializable::parse(value);
-            //Serializable::from_config
+            Serializable::config_to_object(object, __conf);
         };
         Reflectable::Regist<T>();
     }
@@ -159,6 +159,27 @@ public:
 
         return __conf;
     }
+
+    /**
+     * @brief 从config 转成这个对象
+     */
+    template<typename T>
+    static void config_to_object(T * objP,config & __conf){
+        std::string class_name = GET_TYPE_NAME(T);
+        for( auto & it : __conf){
+            if( it.first != "class_name" ){
+                auto &[field_name,value] = it;
+                std::string str_type =  Reflectable::get_field_type(class_name, field_name);
+                void *field = Reflectable::get_field(objP, class_name, str_type);
+                if( str_type.back() == '*' && value == "null")
+                    *(void**)field = nullptr;
+                else
+                    configPair::string_to_value[str_type](field,value);
+
+            }
+        }
+    }
+
 };
     
 } // end namespace cppjson

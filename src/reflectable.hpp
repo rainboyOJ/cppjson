@@ -57,7 +57,22 @@ struct Reflectable
          * @param field_name 成员名
          */
         template<typename FieldType=void*>
-        inline static auto get_field(void*object,std::string class_name,std::string field_name);
+        inline static auto get_field(void*object,std::string class_name,std::string field_name){
+            try {
+                auto offset = field.at(class_name).at(field_name).second;
+                std::size_t real_addr = (reinterpret_cast<std::size_t>(object) + offset );
+                if( std::is_same_v<FieldType, void*>){
+                    return reinterpret_cast<void*>(real_addr);
+                }
+                else 
+                    return *(reinterpret_cast<FieldType*>(real_addr));
+
+            }
+            catch(std::exception & e){
+                std::cerr << " Exception : " << e.what() << "\n";
+                throw e;
+            }
+        }
 
         /**
          * @brief 根据类名,成员名,得到一对象指针指向的对象中的成员,只不过指定了类类型
@@ -70,7 +85,15 @@ struct Reflectable
         /**
          * @brief 得到类的成员 类型(字符串)
          */
-        inline static std::string get_field_type(std::string class_name,std::string field_name);
+        inline static std::string get_field_type(std::string class_name,std::string field_name){
+            try {
+                return field.at(class_name).at(field_name).first;
+            }
+            catch(std::exception & e){
+                std::cerr << " Exception : " << e.what() << "\n"; //TODO
+                throw e;
+            }
+        }
 
         /**
          * @brief 得到类的成员 偏移
