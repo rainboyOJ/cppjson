@@ -41,9 +41,9 @@ struct Reflectable
         template<typename T>
         inline static config get_config(const T*object) {
             std::string class_name = GET_TYPE_NAME(T);
-            std::cout << "class_name " << class_name << std::endl;
+            //std::cout << "class_name " << class_name << std::endl;
             config conf(&field[class_name],object); // 产生了这个map
-            std::cout << "class_name " << class_name << std::endl;
+            //std::cout << "class_name " << class_name << std::endl;
             conf.update({{"class_name",class_name}}); //把类更新到map 里
             return conf;
         }
@@ -58,10 +58,10 @@ struct Reflectable
          */
         template<typename FieldType=void*>
         inline static auto get_field(void*object,std::string class_name,std::string field_name){
-            std::cout << "get_field" << std::endl;
+            //std::cout << "get_field" << std::endl;
             try {
-                std::cout << class_name << std::endl;
-                std::cout << field_name<< std::endl;
+                //std::cout << class_name << std::endl;
+                //std::cout << field_name<< std::endl;
                 auto offset = field.at(class_name).at(field_name).second;
                 std::size_t real_addr = (reinterpret_cast<std::size_t>(object) + offset );
                 if( std::is_same_v<FieldType, void*>){
@@ -90,8 +90,6 @@ struct Reflectable
         inline static std::string get_field_type(std::string class_name,std::string field_name){
             try {
                 auto ret = field.at(class_name).at(field_name).first;
-                std::cout << "find get_field_type === " << std::endl;
-                std::cout << ret << std::endl;
                 return ret;
             }
             catch(std::exception & e){

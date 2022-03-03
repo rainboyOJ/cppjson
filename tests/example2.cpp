@@ -43,11 +43,8 @@ int main()
 {
     Serializable::Regist<Node>();
     std::string json = R"({ "vec":[4,3,2,1], "z":"hello world", "y":6.123, "x":100, "class_name":"Node" })";
-    auto decode_conf = Serializable::parse(json);
-    std::cout << "config iterable" << std::endl;
-    for (const auto& e : decode_conf) {
-        std::cout << e.first << " " << e.second << std::endl;
-    }
+    return 0;
+
     std::cout << "======== loads ======= " << std::endl;
     auto load_object =  Serializable::loads<Node>(json);
     std::cout << "end load" << std::endl;

@@ -18,7 +18,6 @@ public:
         configPair::string_to_value[GET_TYPE_NAME(T)] = [](void * object,const std::string & value)->void
         {
             config __conf = Serializable::parse(value);
-            std::cout << "=== parse end" << std::endl;
             Serializable::config_to_object<T>( reinterpret_cast<T*>(object) , __conf);
         };
         Reflectable::Regist<T>();
@@ -150,7 +149,7 @@ public:
                 value.push_back(it);
             }
             else if ( state == end_parse){
-                std::cout << key << " " << value << std::endl;
+                //std::cout << key << " " << value << std::endl;
                 state = init;
                 __conf[key] = value;
                 key.clear();
@@ -167,14 +166,10 @@ public:
     template<typename T>
     static void config_to_object(T * objP,config & __conf){
         std::string class_name = GET_TYPE_NAME(T);
-        std::cout << "== config_to_object " << class_name << std::endl;
+        //std::cout << "== config_to_object " << class_name << std::endl;
         for( auto & it : __conf){
             if( it.first != "class_name" ){
                 auto &[field_name,value] = it;
-                std::cout << "==" << std::endl;
-                std::cout << field_name << std::endl;
-                std::cout << value << std::endl;
-                std::cout << "==" << std::endl;
                 std::string str_type =  Reflectable::get_field_type(class_name, field_name);
                 void *field = Reflectable::get_field(objP, class_name, field_name);
                 if( str_type.back() == '*' && value == "null")
