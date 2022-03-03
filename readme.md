@@ -21,3 +21,7 @@ mkdir build && cd build
 cmake ..
 make
 ```
+
+## BUG
+
+- 嵌套的循环依赖的类型 如:`std::tuple<std::pair<int,int>>`

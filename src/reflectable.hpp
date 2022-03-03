@@ -33,8 +33,14 @@ struct Reflectable
         static void Regist(){
             static_assert(has_config_member_function<T>::value,"There are some objects that use reflection but haven't implement public method Config get_config()const");
             T object;
-            //TODO default_constructors
-            //TODO default_deconstructors
+            Reflectable::default_constructors[GET_TYPE_NAME(T)]=[](void)->void*          //默认构造函数 
+            {
+                return (void*)(new T());
+            };
+            Reflectable::default_deconstructors[GET_TYPE_NAME(T)]=[](void*object)->void  //析构函数 
+            {
+                delete ((T*)object);
+            };
             auto config = object.get_config();  //注册时调用一下get_config
         }
 
@@ -81,8 +87,10 @@ struct Reflectable
          * @param object 对象指针
          * @param field_name 成员名
          */
-        template<typename FieldType=void*,typename ClassType>
-        inline static auto get_field(ClassType&object,std::string field_name);
+        template<typename ClassType>
+        inline static auto get_field(ClassType&object,std::string field_name){
+            return get_field(&object, GET_TYPE_NAME(ClassType),field_name);
+        }
 
         /**
          * @brief 得到类的成员 类型(字符串)
@@ -128,7 +136,7 @@ struct Reflectable
          * 删除一个对象实例
          */
         inline static void delete_instance(std::string class_name,void*object){
-	        default_deconstructors[class_name](object);
+            default_deconstructors[class_name](object);
         }
 
         /**

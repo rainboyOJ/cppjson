@@ -148,6 +148,7 @@ template <typename T,typename U> struct is_pair<std::pair<T,U>> : std::true_type
 template <typename> struct is_vector: std::false_type {};
 template <typename T> struct is_vector<std::vector<T>>: std::true_type {};
 
+
 /// ====================== 函数
 
 //对于每一个元素进行遍历
@@ -171,7 +172,10 @@ void for_each_tuple(std::tuple<Ts...> const & t,F&& f){
 }
 /// ====================== 函数 end
 
+
 // value_to_string 利用了偏特化的技巧
+// ============== 定义
+
 template<typename T,typename = void>
 struct To_String {
     static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
@@ -297,6 +301,31 @@ struct To_String <T,
         return oss.str();
     }
 };
+
+template<typename T>
+struct To_String <T,
+    std::enable_if_t< std::is_array<T>::value >
+> {
+    template<typename U,std::size_t N>
+    static std::string to(const U(&arr)[N] ,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) ;
+};
+
+template<typename T>
+template<typename U,std::size_t N>
+std::string
+To_String <T,
+    std::enable_if_t< std::is_array<T>::value >
+>::to(const U(&arr)[N], STR_TO_VALUE_FUNC_MAP_TYPE &to_func){
+    std::ostringstream oss;
+    oss << "[";
+    for(auto i = 0 ;i< N ; ++i){
+        oss << To_String<U>::to(arr[i],to_func);
+        if( i != N-1)
+            oss << ",";
+    }
+    oss << "]";
+    return oss.str();
+}
 
 
 

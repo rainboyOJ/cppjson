@@ -5,9 +5,13 @@ namespace cppjson {
 struct NoSuchClassException:public std::exception
 { 
 public:
-    explicit NoSuchClassException(const std::string&type_name);
-    virtual ~NoSuchClassException()throw();
-    virtual const char*what()const throw();
+    explicit NoSuchClassException(const std::string&type_name) {
+        std::ostringstream oss;
+        oss<<"Class '"<<type_name<<"' dose not exist or not reflectable.";
+        this->message=oss.str();
+    }
+    virtual ~NoSuchClassException()throw() {}
+    virtual const char*what()const throw() { return message.c_str(); }
 protected: 
     std::string message;
 };
