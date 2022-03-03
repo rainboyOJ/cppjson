@@ -206,12 +206,10 @@ struct To_String <T,
 #ifdef __SERIALIZABLE_H__
         to_func[GET_TYPE_NAME(T)] = [](void * field,const std::string& str) ->void
         {
-            std::istringstream iss(str);
-            T value;
-            char ch;
-            iss >> ch >> value;
-            value.pop_back();
-            *reinterpret_cast<T*>(field) = value;
+            std::string_view value(str);
+            if( value.front() == '\"' ) value.remove_prefix(1);
+            if( value.back() == '\"' )  value.remove_suffix(1);
+            *reinterpret_cast<T*>(field) = std::string(value);
         };
 #endif
         return std::string("\"") + object + std::string("\"");

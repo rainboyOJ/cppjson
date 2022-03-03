@@ -43,11 +43,9 @@ int main()
 {
     Serializable::Regist<Node>();
     std::string json = R"({ "vec":[4,3,2,1], "z":"hello world", "y":6.123, "x":100, "class_name":"Node" })";
-    return 0;
 
     std::cout << "======== loads ======= " << std::endl;
     auto load_object =  Serializable::loads<Node>(json);
-    std::cout << "end load" << std::endl;
     std::cout << load_object.x << std::endl;
     std::cout << load_object.y << std::endl;
     std::cout << load_object.z << std::endl;
