@@ -10,8 +10,8 @@ using namespace std;
 struct Node
 {
     int x=1;
-    //float y=5;
-    //std::string z="sjf";
+    float y=5;
+    std::string z="sjf";
     //char *abc;
     //std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
     //std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
@@ -22,8 +22,8 @@ struct Node
         config _conf=Reflectable::get_config(this);
         _conf.update({
             {"x",x},
-            //{"y",y},
-            //{"z",z},
+            {"y",y},
+            {"z",z},
             //{"abc",abc},
             //{"tp",tp},
             //{"pair",Pair},
@@ -64,6 +64,8 @@ int main()
     auto load_object =  Serializable::loads<Node>(json);
     std::cout << "end load" << std::endl;
     std::cout << load_object.x << std::endl;
+    std::cout << load_object.y << std::endl;
+    std::cout << load_object.z << std::endl;
 
 
 

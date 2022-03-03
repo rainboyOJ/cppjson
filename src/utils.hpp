@@ -111,6 +111,17 @@ struct To_String <T,
     std::enable_if_t< std::is_same_v<T, std::string>>
 > {
     static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
+#ifdef __SERIALIZABLE_H__
+        to_func[GET_TYPE_NAME(T)] = [](void * field,const std::string& str) ->void
+        {
+            std::istringstream iss(str);
+            T value;
+            char ch;
+            iss >> ch >> value;
+            value.pop_back();
+            *reinterpret_cast<T*>(field) = value;
+        };
+#endif
         return std::string("\"") + object + std::string("\"");
     }
 };
