@@ -38,16 +38,14 @@ public: //数据
     std::size_t address; //成员变量的偏移地址
 
     // 类型 -> 转换函数
-    static std::unordered_map<std::string,
-        std::function<void(void*,const std::string&)> > string_to_value;
+    static STR_TO_VALUE_FUNC_MAP_TYPE string_to_value;
 };
 
-std::unordered_map <std::string,
-        std::function<void(void*,const std::string&)> > configPair::string_to_value;
+STR_TO_VALUE_FUNC_MAP_TYPE configPair::string_to_value;
 
 template<typename Object>
 std::string configPair::value_to_string(const Object&field){
-    return To_String<Object>::to(field);
+    return To_String<Object>::to(field,string_to_value);
 }
 
 

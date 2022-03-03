@@ -58,7 +58,10 @@ struct Reflectable
          */
         template<typename FieldType=void*>
         inline static auto get_field(void*object,std::string class_name,std::string field_name){
+            std::cout << "get_field" << std::endl;
             try {
+                std::cout << class_name << std::endl;
+                std::cout << field_name<< std::endl;
                 auto offset = field.at(class_name).at(field_name).second;
                 std::size_t real_addr = (reinterpret_cast<std::size_t>(object) + offset );
                 if( std::is_same_v<FieldType, void*>){
@@ -69,8 +72,7 @@ struct Reflectable
 
             }
             catch(std::exception & e){
-                std::cerr << " Exception : " << e.what() << "\n";
-                throw e;
+                throw NoSuchFieldException(class_name,field_name);
             }
         }
 
@@ -87,11 +89,13 @@ struct Reflectable
          */
         inline static std::string get_field_type(std::string class_name,std::string field_name){
             try {
-                return field.at(class_name).at(field_name).first;
+                auto ret = field.at(class_name).at(field_name).first;
+                std::cout << "find get_field_type === " << std::endl;
+                std::cout << ret << std::endl;
+                return ret;
             }
             catch(std::exception & e){
-                std::cerr << " Exception : " << e.what() << "\n"; //TODO
-                throw e;
+                throw NoSuchFieldException(class_name, field_name);
             }
         }
 

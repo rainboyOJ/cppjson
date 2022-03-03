@@ -10,24 +10,24 @@ using namespace std;
 struct Node
 {
     int x=1;
-    float y=5;
-    std::string z="sjf";
-    char *abc;
+    //float y=5;
+    //std::string z="sjf";
+    //char *abc;
     //std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
-    std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
-    std::pair<int, std::string> Pair = std::make_pair(100, "hello");
-    std::vector<int> vec{1,2,3,4};
+    //std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
+    //std::pair<int, std::string> Pair = std::make_pair(100, "hello");
+    //std::vector<int> vec{1,2,3,4};
     config get_config() const
     {
         config _conf=Reflectable::get_config(this);
         _conf.update({
             {"x",x},
-            {"y",y},
-            {"z",z},
-            {"abc",abc},
-            {"tp",tp},
-            {"pair",Pair},
-            {"vec",vec}
+            //{"y",y},
+            //{"z",z},
+            //{"abc",abc},
+            //{"tp",tp},
+            //{"pair",Pair},
+            //{"vec",vec}
         });
         return _conf;
     }
@@ -47,7 +47,7 @@ int main()
 {
     Serializable::Regist<Node>();
     Node object;
-    object.abc = "abc";
+    //object.abc = "abc";
 
     /*序列化与反序列化*/
     
@@ -61,7 +61,10 @@ int main()
         std::cout << e.first << " " << e.second << std::endl;
     }
     std::cout << "======== loads ======= " << std::endl;
-    Serializable::loads<Node>(json);
+    auto load_object =  Serializable::loads<Node>(json);
+    std::cout << "end load" << std::endl;
+    std::cout << load_object.x << std::endl;
+
 
 
     //Node2 o2;

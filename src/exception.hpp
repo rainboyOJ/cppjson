@@ -13,6 +13,22 @@ protected:
 };
 
 
+struct NoSuchFieldException:public std::exception
+{
+public:
+    explicit NoSuchFieldException(std::string_view type_name,std::string_view field_name){
+        std::ostringstream oss;
+        oss<<"Object of type <"
+            << type_name 
+            << "> dose not have field named '" 
+            << field_name << "' .";
+        this->message = oss.str();
+    }
+    virtual ~NoSuchFieldException()throw() {}
+    virtual const char*what()const throw() { return message.c_str();}
+protected: 
+    std::string message;
+};
 
 class JsonDecodeException:public std::exception
 {

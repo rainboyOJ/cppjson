@@ -12,6 +12,8 @@
 namespace cppjson {
 
 #define GET_TYPE_NAME(type) abi::__cxa_demangle(typeid(type).name(),0,0,0)
+
+using STR_TO_VALUE_FUNC_MAP_TYPE = std::unordered_map <std::string, std::function<void(void*,const std::string&)> > ;
     
 struct EmptyClass{}; //在Reflectanle::get_method与Reflectable::classmethod_wrapper中有使用，用于类型转换的"中介"
 
@@ -80,7 +82,7 @@ void for_each_tuple(std::tuple<Ts...> const & t,F&& f){
 // value_to_string 利用了偏特化的技巧
 template<typename T,typename = void>
 struct To_String {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         return "unkown";
     }
 };
@@ -90,7 +92,16 @@ struct To_String <T,
     std::enable_if_t< std::is_fundamental_v<T> && (! std::is_same_v<T, char *>) >
     >
 {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
+#ifdef __SERIALIZABLE_H__
+        to_func[GET_TYPE_NAME(T)] = [](void * field,const std::string& str) ->void
+        {
+            std::istringstream iss(str);
+            T value;
+            iss >> value;
+            *reinterpret_cast<T*>(field) = value;
+        };
+#endif
         return std::to_string(object);
     }
 };
@@ -99,7 +110,7 @@ template<typename T>
 struct To_String <T,
     std::enable_if_t< std::is_same_v<T, std::string>>
 > {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         return std::string("\"") + object + std::string("\"");
     }
 };
@@ -108,7 +119,7 @@ template<typename T>
 struct To_String <T,
     std::enable_if_t< std::is_same_v<T, char *>>
 > {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         return std::string("\"") + std::string(object) + std::string("\"");
     }
 };
@@ -118,7 +129,7 @@ template<typename T>
 struct To_String <T,
     std::enable_if_t< has_config_member_function<T>::value>
 > {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         return object.get_config().serialized_to_string();
     }
 };
@@ -127,7 +138,7 @@ template<typename T>
 struct To_String <T,
     std::enable_if_t< is_tuple<T>::value >
 > {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         std::ostringstream oss;
         oss << "[";
         for_each_tuple(object, [&oss](auto x,bool last){
@@ -147,7 +158,7 @@ template<typename T>
 struct To_String <T,
     std::enable_if_t< is_pair<T>::value >
 > {
-    static std::string to(const T & object) {
+    static std::string to(const T & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         std::ostringstream oss;
         oss << "[";
         oss << To_String<std::tuple_element_t<0,T>>::to(object.first);
@@ -163,7 +174,7 @@ struct To_String <T,
     std::enable_if_t< is_vector<T>::value >
 > {
     template<typename U>
-    static std::string to(const std::vector<U> & object) {
+    static std::string to(const std::vector<U> & object,STR_TO_VALUE_FUNC_MAP_TYPE & to_func) {
         std::ostringstream oss;
         oss << "[";
         std::size_t idx = 0;
