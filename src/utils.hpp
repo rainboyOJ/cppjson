@@ -31,7 +31,99 @@ inline bool isBlankChar(char c){
     return Any_Of(c,'\t','\n','\r',' ');
 }
 
-
+inline std::vector<std::string>unpacking_list(const std::string&serialized)              //列表解包,"[1,2,3,4]"->["1","2","3","4"]
+{                                                                                        //思路参考Serializable::decode
+    enum State{init,parse_fundamental,parse_string,parse_struct,parse_iterable,end_parse}state=init;
+    std::vector<std::string>vec;
+    std::string temp;
+    int length=serialized.size();
+    int nested_struct=0;             //嵌套的情况：{{},{}}
+    int nested_iterable=0;           //嵌套的情况：[[],[],{}]
+    for(int i=0;i<length;++i)
+    {
+        auto&it=serialized[i];
+        if(i==0)
+            continue;
+        if(state==init)
+        {
+            if(it=='{')
+            {
+                state=parse_struct;
+                nested_struct++;
+                temp.push_back(it);
+            }
+            else if(it=='[')
+            {
+                state=parse_iterable;
+                nested_iterable++;
+                temp.push_back(it);
+            }    
+            else if(it!=','&&it!=' ')
+            {
+                state=parse_fundamental;
+                temp.push_back(it);
+            }
+            else if(it=='\"')
+            {
+                state=parse_string;
+                temp.push_back(it);
+            }
+        }
+        else if(state==parse_string)
+        {
+            temp.push_back(it);
+            if(it=='\"'&&serialized[i-1]!='\\') //转义字符不是结束
+            {
+                state=end_parse;
+                --i;
+            }
+        }
+        else if(state==parse_struct)
+        {
+            if(it=='}'||it=='{')
+                nested_struct+=(it=='}'?-1:1);
+            if(nested_struct==0) //解析完毕
+            {
+                state=end_parse;
+                --i;
+                temp.push_back(it);
+                continue;
+            }
+            temp.push_back(it);
+        }
+        else if(state==parse_iterable)
+        {
+            if(it==']'||it=='[')
+                nested_iterable+=(it==']'?-1:1);
+            if(nested_iterable==0)
+            {
+                state=end_parse;
+                --i;
+                temp.push_back(it);
+                continue;
+            }
+            temp.push_back(it);
+        }
+        else if(state==parse_fundamental)
+        {
+            if(it==','||it==']')
+            {
+                state=end_parse;
+                --i;
+                continue;
+            }
+            temp.push_back(it);
+        }
+        else if(state==end_parse)
+        {
+//            std::cout<<"<"<<temp<<">\n";
+            vec.push_back(temp);
+            temp.clear();
+            state=init;
+        }
+    }
+    return vec;
+}
 
 
 template<typename T>
@@ -153,14 +245,11 @@ struct To_String <T,
         std::ostringstream oss;
         oss << "[";
         for_each_tuple(object, [&oss](auto x,bool last){
-                //std::cout << "--- " ;
-                //std::cout << GET_TYPE_NAME(x) << std::endl;
-                //auto ret = typeid(decltype(x)) == typeid(int);
-                //std::cout << ret << std::endl;
                     oss << To_String<std::remove_cv_t<decltype(x)>>::to(x);
                     if( !last ) oss << ",";
                 });
         oss << "]";
+
         return oss.str();
     }
 };
@@ -190,11 +279,23 @@ struct To_String <T,
         oss << "[";
         std::size_t idx = 0;
         for (const auto& e : object) {
-            oss << To_String<U>::to(e);
+            oss << To_String<U>::to(e,to_func);
             if( ++idx != object.size() )
                 oss << ",";
         }
         oss << "]";
+#ifdef __SERIALIZABLE_H__
+        to_func[GET_TYPE_NAME(T)] = [&to_func](void*field,const std::string&str)->void 
+        {
+            auto values=unpacking_list(str);                                     //字符串形式的值
+            T object(values.size());
+            std::size_t idx{0};
+            for (auto& e : object) {
+                to_func[GET_TYPE_NAME(U)](&e,values[idx++]);
+            }
+            *reinterpret_cast<T*>(field) = std::move(object);
+        };
+#endif
         return oss.str();
     }
 };

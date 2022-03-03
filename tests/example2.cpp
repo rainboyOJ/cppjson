@@ -1,3 +1,6 @@
+/**
+ * test loads
+ */
 #include<iostream>
 #include<vector>
 #include <tuple>
@@ -12,10 +15,6 @@ struct Node
     int x=1;
     float y=5;
     std::string z="sjf";
-    //char *abc;
-    std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
-    //std::tuple<int,float,std::string> tp = std::make_tuple(1,1.1,"str");
-    //std::pair<int, std::string> Pair = std::make_pair(100, "hello");
     std::vector<int> vec{1,2,3,4};
     config get_config() const
     {
@@ -24,9 +23,6 @@ struct Node
             {"x",x},
             {"y",y},
             {"z",z},
-            //{"abc",abc},
-            //{"tp",tp},
-            //{"pair",Pair},
             {"vec",vec}
         });
         return _conf;
@@ -46,15 +42,7 @@ struct Node2 {
 int main()
 {
     Serializable::Regist<Node>();
-    Node object;
-    //object.abc = "abc";
-
-    /*序列化与反序列化*/
-    
-    std::string json=Serializable::dumps(object);                 //序列化
-    cout<<json<<endl;
-
-    std::cout << "============ Serializable::parse" << std::endl;
+    std::string json = R"({ "vec":[4,3,2,1], "z":"hello world", "y":6.123, "x":100, "class_name":"Node" })";
     auto decode_conf = Serializable::parse(json);
     std::cout << "config iterable" << std::endl;
     for (const auto& e : decode_conf) {
