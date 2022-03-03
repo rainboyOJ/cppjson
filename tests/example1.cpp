@@ -60,6 +60,8 @@ int main()
     for (const auto& e : decode_conf) {
         std::cout << e.first << " " << e.second << std::endl;
     }
+    std::cout << "======== loads ======= " << std::endl;
+    Serializable::loads<Node>(json);
 
 
     //Node2 o2;

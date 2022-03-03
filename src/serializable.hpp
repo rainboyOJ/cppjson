@@ -40,7 +40,16 @@ public:
     template<typename T>
     static auto loads(const std::string& json){
         std::string class_name=GET_TYPE_NAME(T);
-        
+        if constexpr (has_config_member_function<T>::value) {
+            try {
+                T obj;
+                configPair::string_to_value[class_name](&obj,json);
+                return obj;
+            }
+            catch(std::exception & e){
+                std::cerr << " Exception : " << e.what() << "\n";
+            }
+        }
     }
 
     /**
