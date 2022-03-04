@@ -324,6 +324,17 @@ To_String <T,
             oss << ",";
     }
     oss << "]";
+#ifdef __SERIALIZABLE_H__
+        to_func[GET_TYPE_NAME(T)] = [&to_func](void*field,const std::string&str)->void 
+        {
+            auto values=unpacking_list(str);                                     //字符串形式的值
+            auto arr = reinterpret_cast<U*>(field);
+            for (std::size_t i = 0; i < N ; ++i) {
+                to_func[GET_TYPE_NAME(U)](&arr[i],values[i]);
+            }
+            //*reinterpret_cast<T*>(field) = std::move(object);
+        };
+#endif
     return oss.str();
 }
 

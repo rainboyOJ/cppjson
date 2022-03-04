@@ -24,13 +24,13 @@ struct Node
     {
         config config=Serializable::get_config(this);
         config.update({
-            //{"y",y},
+            {"y",y},
             {"z",z},
             //{"t",t}
         });
         return config;
     }
-    //std::vector<Node*>y;
+    std::vector<Node*>y;
     int z[3];
     //std::array<int,4>t;
 };
@@ -48,7 +48,8 @@ int main()
     //a.t[0]=2021,a.t[1]=10,a.t[2]=19,a.t[3]=10;
     std::string json=Serializable::dumps(a);                                        //序列化为json格式的字符串
     cout<<"json\n"<<json<<endl;         
-    //Node b=Serializable::loads<Node>(json);                                         //通过json格式的字符串进行反序列化
+    Node b=Serializable::loads<Node>(json);                                         //通过json格式的字符串进行反序列化
     //cout<<endl<<a.get_config().serialized_to_string(true);
-    //cout<<endl<<b.get_config().serialized_to_string(true);                          //打印结果
+    cout<<endl<<b.get_config().serialized_to_string(true);                          //打印结果
+    return 0;
 } 
