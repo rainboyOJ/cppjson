@@ -38,7 +38,7 @@ public:
      * @brief 反序列化/加载
      */
     template<typename T>
-    static auto loads(const std::string& json){
+    static T loads(const std::string& json){
         std::string class_name=GET_TYPE_NAME(T);
         if constexpr (has_config_member_function<T>::value) {
             try {
@@ -49,6 +49,12 @@ public:
             catch(std::exception & e){
                 std::cerr << " Exception : " << e.what() << "\n";
             }
+        }
+        else //其他的没有实现get_config方法，但是是int,std::vector等可以序列化的class
+        {
+            T obj;
+            configPair::string_to_value[class_name](&obj,json);
+            return obj;
         }
     }
 
