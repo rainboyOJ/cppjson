@@ -63,7 +63,7 @@ struct CHAR_ARRAY_SIZE<T [N]> {
 
 //能支持的单个类型的元素
 template<typename T,typename  U = std::remove_cvref_t<T>>
-concept qdj_stringAbale = 
+concept qdj_stringAble = 
     std::same_as<U, std::string> ||
     std::same_as<U, std::string_view> || 
     is_char_array<U>::value;
@@ -75,7 +75,7 @@ concept qdj_singleValueType = ( std::integral<U> && !std::same_as<char, U>);
 template<typename T>
 concept qdj_iterable  = 
     std::ranges::range<T> && (
-    qdj_stringAbale< std::ranges::range_value_t<T> >|| 
+    qdj_stringAble< std::ranges::range_value_t<T> >|| 
     qdj_singleValueType< std::ranges::range_value_t<T> >
      );
 
@@ -83,7 +83,7 @@ concept qdj_iterable  =
 //工具函数,转成字符串
 //1. 字符中转字符串
 template<typename T>
-requires qdj_stringAbale<T>
+requires qdj_stringAble<T>
 std::string qdj_to_string( T && v) {
     std::string ret{'"'};
     if constexpr (is_char_array<T>::value) {
