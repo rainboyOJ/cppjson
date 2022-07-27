@@ -24,19 +24,27 @@ struct is_char_array {
     static constexpr bool value = decltype(check(std::declval<T>()))::value;
 };
 
+//template<typename T>
+//struct CHAR_ARRAY_SIZE {
+    //template<typename U1,std::size_t N>
+    //static constexpr std::size_t __array_size(U1 (&) [N]) { return N; }
+
+    //static constexpr T type{}; // std::declval 不能在 constexpr 中使用,只能在 decltype,
+                               //// declval can only be called in unevaluated contexts such as in a decltype or sizeof.
+                               //// --> by https://stackoverflow.com/a/66389795
+    //static constexpr int value =  __array_size(type);
+//};
 
 template<typename T>
 struct CHAR_ARRAY_SIZE {
-    template<typename U1,std::size_t N>
-    static constexpr std::size_t __array_size(U1 (&) [N]) { return N; }
-
-    static constexpr T type{}; // std::declval 不能在 constexpr 中使用,只能在 decltype,
-                               // declval can only be called in unevaluated contexts such as in a decltype or sizeof.
-                               // --> by https://stackoverflow.com/a/66389795
-    static constexpr int value =  __array_size(type);
+    static constexpr std::size_t value = 0;
 };
 
-
+template<typename T,std::size_t N>
+requires std::same_as<std::remove_cvref_t<T>, char>
+struct CHAR_ARRAY_SIZE<T [N]> {
+    static constexpr std::size_t value = N;
+};
 
 
 
