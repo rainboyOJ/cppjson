@@ -23,8 +23,7 @@ inline bool Any_Of(T&& t,U... args){
 }
 
 template<typename T,typename... U>
-inline bool None_of(T&& t,U... args){
-    return !Any_Of(std::forward<T>(t),args...);
+inline bool None_of(T&& t,U... args){ return !Any_Of(std::forward<T>(t),args...);
 }
 
 inline bool isBlankChar(char c){
@@ -337,8 +336,6 @@ To_String <T,
 #endif
     return oss.str();
 }
-
-
 
 
 } // end namespace cppjson
